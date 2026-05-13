@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Login - BiblioLux</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-container">
+    <div class="auth-box apple">
+
+        <h2>Bienvenido</h2>
+        <p>Accede a tu biblioteca</p>
+
+        <div class="input-group">
+            <input id="usuario" required>
+            <label>Usuario</label>
+        </div>
+
+        <div class="input-group">
+            <input id="clave" type="password" required>
+            <label>Contraseña</label>
+        </div>
+
+        <button onclick="login()">Entrar</button>
+
+        <div id="mensaje"></div>
+
+        <span>¿No tienes cuenta?</span>
+        <a href="registro.html">Crear cuenta</a>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

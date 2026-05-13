@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro - BiblioLux</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-container">
+    <div class="auth-box apple">
+
+        <h2>Crear cuenta</h2>
+        <p>Únete a la experiencia premium</p>
+
+        <div class="input-group">
+            <input id="nuevoUsuario" required>
+            <label>Usuario</label>
+        </div>
+
+        <div class="input-group">
+            <input id="nuevaClave" type="password" required>
+            <label>Contraseña</label>
+        </div>
+
+        <button onclick="registrar()">Registrarse</button>
+
+        <div id="mensaje"></div>
+
+        <span>¿Ya tienes cuenta?</span>
+        <a href="login.html">Iniciar sesión</a>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

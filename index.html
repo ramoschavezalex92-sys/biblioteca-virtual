@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>BiblioLux - Versión Alterna</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<style>
+/* Additional styles for tooltips and new elements */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: rgba(0,0,0,0.8);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -150px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+.featured-books {
+    position: relative;
+    padding: 40px 60px;
+    background: rgba(255,255,255,0.05);
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.featured-books::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><g opacity="0.14" fill="none" stroke="%23ffffff" stroke-width="1.5"><rect x="8" y="18" width="20" height="30" rx="2"/><rect x="40" y="15" width="18" height="28" rx="2"/><rect x="68" y="12" width="18" height="32" rx="2"/><line x1="11" y1="26" x2="26" y2="26"/><line x1="43" y1="30" x2="58" y2="30"/><line x1="71" y1="29" x2="86" y2="29"/></g></svg>');
+    background-size: 120px 120px;
+    background-repeat: repeat;
+    background-position: center;
+    filter: grayscale(100%) opacity(0.18);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.featured-books > * {
+    position: relative;
+    z-index: 1;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background: rgba(0,0,0,0.3);
+}
+.stat-item {
+    text-align: center;
+}
+.search-section {
+    padding: 40px 60px;
+    text-align: center;
+}
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #ccc;
+}
+</style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <div id="glow"></div>
+
+    <!-- SIDEBAR IZQUIERDO -->
+    <aside class="sidebar" title="Sidebar: Quick access panel for additional information and navigation. Provides easy access to key features without cluttering main content.">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <h3>Información</h3>
+                <ul>
+                    <li><a href="#about">Sobre BiblioLux</a></li>
+                    <li><a href="#categories">Categorías</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Acceso Rápido</h3>
+                <ul>
+                    <li><a href="login.html">Iniciar Sesión</a></li>
+                    <li><a href="registro.html">Registrarse</a></li>
+                    <li><a href="#favorites">Mis Favoritos</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Estadísticas</h3>
+                <div class="sidebar-stats">
+                    <div class="stat-mini">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Libros</span>
+                    </div>
+                    <div class="stat-mini">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Usuarios</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <nav class="navbar" title="Navbar: Fixed navigation with blur effect for modern feel, ensuring easy access to key pages without cluttering the main content.">
+        <h2>BiblioLux</h2>
+        <div>
+            <span id="usuarioActivo"></span>
+            <a href="index1.html">Inicio</a>
+            <a href="login.html">Acceso</a>
+            <a href="registro.html">Registro</a>
+            <button onclick="cerrarSesion()">Salir</button>
+        </div>
+    </nav>
+
+    <section class="hero" title="Hero Section: Immersive video background with clear CTA to guide users downward, creating emotional connection and encouraging exploration. The dark theme evokes mystery and focus, aligning with 'book light' concept.">
+        <video autoplay muted loop class="video-bg">
+            <source src="https://cdn.coverr.co/videos/coverr-library-books-1573/1080p.mp4">
+        </video>
+        <div class="hero-content">
+            <h1>Biblioteca Digital</h1>
+            <p>Explora una experiencia de lectura premium con libros iluminados</p>
+            
+            <div class="hero-features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z" fill="white" opacity="0.8"/>
+                            <path d="M3 21V19H21V21H3Z" fill="white" opacity="0.6"/>
+                        </svg>
+                    </div>
+                    <span class="feature-text">500+ Libros</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                            <path d="M12 6V12L16 14" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                        </svg>
+                    </div>
+                    <span class="feature-text">Acceso 24/7</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white" opacity="0.8"/>
+                        </svg>
+                    </div>
+                    <span class="feature-text">Descarga Instantánea</span>
+                </div>
+            </div>
+            
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="document.querySelector('.search-section').scrollIntoView()">Explorar Biblioteca</button>
+                <a href="registro.html" class="btn-secondary">Crear Cuenta</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="info" title="Info Section: Concise overview with benefits, using whitespace for readability. Helps users understand value proposition quickly, reducing decision friction.">
+        <h2>Diseñado para Lectores Exigentes</h2>
+        <p>Accede a una colección curada de libros digitales con interfaz elegante, búsqueda intuitiva y descargas instantáneas. Únete a miles de lectores en un viaje literario iluminado.</p>
+    </section>
+
+    <section class="stats" title="Stats Section: Social proof with numbers builds trust and community feel. Visual counters make the site feel active and populated, countering emptiness.">
+        <div class="stat-item">
+            <h3>500+</h3>
+            <p>Libros Disponibles</p>
+        </div>
+        <div class="stat-item">
+            <h3>1000+</h3>
+            <p>Usuarios Activos</p>
+        </div>
+        <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Acceso Ilimitado</p>
+        </div>
+    </section>
+
+    <section class="search-section" title="Search Section: Prominent, centered search with placeholder encourages interaction. Real-time filtering provides immediate feedback, improving usability.">
+        <h2>Descubre Tu Próximo Libro</h2>
+        <input type="text" id="buscador" placeholder="Buscar por título, autor o categoría..." onkeyup="buscarLibro()">
+    </section>
+
+    <section class="featured-books" title="Featured Books: The library section is loaded dynamically, so no static cards are needed.">
+        <h2>Libros Disponibles</h2>
+        <div id="contenedorCategorias"></div>
+    </section>
+
+    <!-- SECCIÓN: CÓMO FUNCIONA -->
+    <section class="section-how-it-works">
+        <div class="section-header">
+            <h2>Cómo Funciona BiblioLux</h2>
+            <div class="header-line"></div>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3>Registrate</h3>
+                <p>Crea tu cuenta en segundos y accede a la biblioteca completa.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3>Busca & Descubre</h3>
+                <p>Explora nuestro catálogo de 500+ libros curados manualmente.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h3>Lee & Disfruta</h3>
+                <p>Descarga y lee tus libros en cualquier momento, en cualquier lugar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: DESTACADO -->
+    <section class="section-showcase">
+        <div class="showcase-content">
+            <div class="showcase-text">
+                <h2>La Experiencia de Lectura Redefinida</h2>
+                <p>BiblioLux no es solo una biblioteca. Es un viaje literario donde cada página te transporta a nuevos mundos. Con una interfaz diseñada para lectores exigentes, acceso instantáneo a miles de títulos y características premium, redefinimos qué significa leer en el digital.</p>
+                <a href="registro.html" class="btn-secondary">Descubre Más</a>
+            </div>
+            <div class="showcase-visual">
+                <div class="visual-card">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z" fill="white" opacity="0.8"/>
+                        <path d="M3 21V19H21V21H3Z" fill="white" opacity="0.6"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: CATEGORÍAS DESTACADAS -->
+    <section class="section-categories">
+        <div class="section-header">
+            <h2>Explora Nuestras Categorías</h2>
+            <div class="header-line"></div>
+        </div>
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z" fill="white" opacity="0.8"/>
+                        <path d="M3 21V19H21V21H3Z" fill="white" opacity="0.6"/>
+                    </svg>
+                </div>
+                <h3>Ficción</h3>
+                <p>150+ títulos</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                        <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                        <circle cx="12" cy="12" r="8" stroke="white" stroke-width="1.5" opacity="0.6"/>
+                    </svg>
+                </div>
+                <h3>Ciencia</h3>
+                <p>120+ títulos</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="3" width="20" height="14" rx="2" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                        <line x1="8" y1="21" x2="16" y2="21" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                        <line x1="12" y1="17" x2="12" y2="21" stroke="white" stroke-width="1.5" opacity="0.8"/>
+                        <rect x="6" y="7" width="12" height="8" rx="1" stroke="white" stroke-width="1.5" opacity="0.6"/>
+                    </svg>
+                </div>
+                <h3>Tecnología</h3>
+                <p>90+ títulos</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🌍</div>
+                <h3>Viajes</h3>
+                <p>80+ títulos</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: COLECCIONES DESTACADAS -->
+    <section class="section-collections">
+        <div class="section-header">
+            <h2>Colecciones Destacadas</h2>
+            <div class="header-line"></div>
+        </div>
+        <div class="collections-grid">
+            <!-- COLECCIÓN AVENTURA -->
+            <div class="collection-card">
+                <div class="collection-image">
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&grayscale" alt="Colección Aventura">
+                    <div class="collection-chip">Aventura</div>
+                </div>
+                <div class="collection-info">
+                    <div class="collection-features">
+                        <span class="feature-tag">Viajes</span>
+                        <span class="feature-tag">Exploración</span>
+                        <span class="feature-tag">Supervivencia</span>
+                    </div>
+                    <p class="collection-description">Embárcate en viajes épicos a través de tierras desconocidas. Historias de exploradores valientes, tesoros ocultos y aventuras inolvidables que te transportarán a mundos lejanos.</p>
+                    <a href="#" class="collection-explore">Explora →</a>
+                </div>
+            </div>
+
+            <!-- COLECCIÓN CIENCIA -->
+            <div class="collection-card">
+                <div class="collection-image">
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop&grayscale" alt="Colección Ciencia">
+                    <div class="collection-chip">Ciencia</div>
+                </div>
+                <div class="collection-info">
+                    <div class="collection-features">
+                        <span class="feature-tag">Investigación</span>
+                        <span class="feature-tag">Descubrimientos</span>
+                        <span class="feature-tag">Innovación</span>
+                    </div>
+                    <p class="collection-description">Descubre los secretos del universo a través de mentes brillantes. Desde la física cuántica hasta la biología molecular, explora el fascinante mundo de la ciencia moderna.</p>
+                    <a href="#" class="collection-explore">Explora →</a>
+                </div>
+            </div>
+
+            <!-- COLECCIÓN FICCIÓN -->
+            <div class="collection-card">
+                <div class="collection-image">
+                    <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop&grayscale" alt="Colección Ficción">
+                    <div class="collection-chip">Ficción</div>
+                </div>
+                <div class="collection-info">
+                    <div class="collection-features">
+                        <span class="feature-tag">Imaginación</span>
+                        <span class="feature-tag">Historias</span>
+                        <span class="feature-tag">Mundos Paralelos</span>
+                    </div>
+                    <p class="collection-description">Sumérgete en universos alternativos creados por la imaginación humana. Novelas que desafían la realidad y te llevan a lugares donde todo es posible.</p>
+                    <a href="#" class="collection-explore">Explora →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: CTA FINAL -->
+    <section class="section-final-cta">
+        <div class="cta-content">
+            <h2>Comienza Tu Viaje Literario Hoy</h2>
+            <p>Únete a miles de lectores que ya disfrutan de BiblioLux</p>
+            <div class="cta-buttons">
+                <a href="registro.html" class="btn-primary">Registrarse Ahora</a>
+                <a href="login.html" class="btn-secondary">Tengo Cuenta</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BiblioLux</h3>
+                <p>La biblioteca digital para lectores exigentes.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="#about">Sobre Nosotros</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                    <li><a href="#terms">Términos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>info@bibliolux.com</p>
+                <p>+1 (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BiblioLux. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\User\Desktop\biblioteca-virtual\index1.html
