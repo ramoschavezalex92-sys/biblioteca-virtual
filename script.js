@@ -103,56 +103,53 @@ const bibliotecaCSV =
 // MÁXIMO LIBROS VISIBLES
 const LIMITE_LIBROS = 8;
 
-// ==========================================
-// PORTADA BIBLIOLUX SVG
-// ==========================================
+// PORTADA SVG ULTRA LIGERA
+const PORTADA_LIBRO = `
+data:image/svg+xml;utf8,
+<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'>
 
-const PORTADA_LIBRO = `data:image/svg+xml;utf8,
-<svg xmlns='http://www.w3.org/2000/svg' width='400' height='600'>
+<defs>
+<linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+<stop offset='0%' stop-color='%23050505'/>
+<stop offset='100%' stop-color='%23141414'/>
+</linearGradient>
+</defs>
 
-<rect width='100%' height='100%' fill='%23111111'/>
+<rect width='100%' height='100%' fill='url(%23g)'/>
 
-<rect x='20' y='20'
-width='360'
-height='560'
-rx='20'
-fill='%23181818'
-stroke='%23333333'
-stroke-width='2'/>
+<circle cx='150' cy='120' r='45'
+fill='none'
+stroke='white'
+stroke-width='2'
+opacity='0.9'/>
 
-<text x='50%'
-y='42%'
-dominant-baseline='middle'
-text-anchor='middle'
+<path d='M150 75 L162 108 L197 108 L168 128 L180 162 L150 142 L120 162 L132 128 L103 108 L138 108 Z'
 fill='white'
-font-size='42'
+opacity='0.9'/>
+
+<text
+x='50%'
+y='250'
+fill='white'
+font-size='34'
 font-family='Arial'
-font-weight='bold'>
-
+font-weight='bold'
+text-anchor='middle'>
 BiblioLux
-
 </text>
 
-<line x1='90'
-y1='320'
-x2='310'
-y2='320'
-stroke='%23666666'
-stroke-width='2'/>
-
-<text x='50%'
-y='58%'
-dominant-baseline='middle'
-text-anchor='middle'
-fill='%23bbbbbb'
-font-size='22'
-font-family='Arial'>
-
+<text
+x='50%'
+y='290'
+fill='%23cccccc'
+font-size='16'
+font-family='Arial'
+text-anchor='middle'>
 Conocimiento sin límites
-
 </text>
 
-</svg>`;
+</svg>
+`;
 
 // ==========================================
 // CARGAR GOOGLE SHEETS
@@ -205,12 +202,48 @@ async function cargarBibliotecaRemota(){
                 !archivo
             ) return;
 
-            // LIMPIAR CATEGORÍAS
+            // ==========================================
+            // LIMPIEZA INTELIGENTE DE CATEGORÍAS
+            // ==========================================
+
+            if(!categoria){
+
+                categoria = "General";
+            }
+
+            // ELIMINAR LINKS
             if(
-                !categoria ||
                 categoria.includes("http") ||
-                categoria.length > 40
+                categoria.includes("drive.google")
             ){
+
+                categoria = "General";
+            }
+
+            // ELIMINAR IDs EXTRAÑOS
+            if(
+                categoria.length > 25 ||
+                categoria.includes("_") ||
+                categoria.includes("=") ||
+                categoria.includes("?")
+            ){
+
+                categoria = "General";
+            }
+
+            // LIMPIAR NÚMEROS Y SÍMBOLOS
+            categoria = categoria
+                .replace(/[0-9]/g, "")
+                .replace(/[-_]/g, " ")
+                .trim();
+
+            // FORMATO BONITO
+            categoria =
+                categoria.charAt(0).toUpperCase() +
+                categoria.slice(1).toLowerCase();
+
+            // SI QUEDA VACÍA
+            if(categoria.length < 3){
 
                 categoria = "General";
             }
@@ -229,7 +262,6 @@ async function cargarBibliotecaRemota(){
 
                 nombre,
                 archivo,
-
                 imagen:
                     PORTADA_LIBRO,
 
@@ -332,7 +364,6 @@ function cargarLibros(){
 <div class="fila">
 `;
 
-        // SOLO 8 LIBROS
         libros
         .slice(0, LIMITE_LIBROS)
         .forEach(libro=>{
@@ -346,25 +377,25 @@ function cargarLibros(){
 `
 <div class="libro">
 
-    <img
-        loading="lazy"
-        src="${libro.imagen}"
-        alt="${libro.nombre}"
-    >
+<img
+loading="lazy"
+src="${libro.imagen}"
+alt="${libro.nombre}"
+>
 
-    <div class="info-libro">
+<div class="info-libro">
 
-        <p>${libro.nombre}</p>
+<p>${libro.nombre}</p>
 
-        <a href="${enlace}"
-           target="_blank"
-           rel="noreferrer noopener">
+<a href="${enlace}"
+target="_blank"
+rel="noreferrer noopener">
 
-           Descargar
+Descargar
 
-        </a>
+</a>
 
-    </div>
+</div>
 
 </div>
 `;
@@ -436,7 +467,6 @@ function mostrarMasLibros(categoria){
 <div class="fila">
 `;
 
-        // MOSTRAR TODOS
         let librosMostrar =
             cat === categoria
             ? libros
@@ -548,3 +578,66 @@ window.addEventListener(
         }
     });
 });
+
+// ==========================================
+// PARTÍCULAS OPTIMIZADAS
+// ==========================================
+
+const canvas = document.getElementById("particles");
+
+if(canvas){
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+
+    for(let i=0;i<25;i++){
+
+        particles.push({
+
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            size:Math.random()*1.2,
+            speedX:(Math.random()-0.5)*0.15,
+            speedY:(Math.random()-0.5)*0.15
+        });
+    }
+
+    function animar(){
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        particles.forEach(p=>{
+
+            p.x+=p.speedX;
+            p.y+=p.speedY;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.size,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fillStyle =
+                "rgba(200,200,200,0.12)";
+
+            ctx.fill();
+        });
+
+        requestAnimationFrame(animar);
+    }
+
+    animar();
+}
