@@ -1,64 +1,98 @@
 // LOGIN
 function registrar(){
+
     let user = nuevoUsuario.value;
     let pass = nuevaClave.value;
     let msg = document.getElementById("mensaje");
 
     if(!user || !pass){
-        msg.innerText = "Completa todos los campos";
+
+        msg.innerText =
+            "Completa todos los campos";
+
         msg.className = "error";
+
         return;
     }
 
     if(localStorage.getItem(user)){
-        msg.innerText = "El usuario ya existe";
+
+        msg.innerText =
+            "El usuario ya existe";
+
         msg.className = "error";
+
         return;
     }
 
     localStorage.setItem(user, pass);
 
-    msg.innerText = "Cuenta creada correctamente";
+    msg.innerText =
+        "Cuenta creada correctamente";
+
     msg.className = "success";
 
     setTimeout(()=>{
+
         location = "login.html";
+
     },1000);
 }
 
 function login(){
+
     let user = usuario.value;
     let pass = clave.value;
     let msg = document.getElementById("mensaje");
 
     if(!user || !pass){
-        msg.innerText = "Completa todos los campos";
+
+        msg.innerText =
+            "Completa todos los campos";
+
         msg.className = "error";
+
         return;
     }
 
     if(localStorage.getItem(user) === pass){
-        msg.innerText = "Acceso correcto...";
+
+        msg.innerText =
+            "Acceso correcto...";
+
         msg.className = "success";
 
         setTimeout(()=>{
-            localStorage.setItem("usuarioActivo", user);
+
+            localStorage.setItem(
+                "usuarioActivo",
+                user
+            );
+
             location = "index.html";
+
         },1000);
 
     } else {
-        msg.innerText = "Usuario o contraseña incorrectos";
+
+        msg.innerText =
+            "Usuario o contraseña incorrectos";
+
         msg.className = "error";
     }
 }
 
 function cerrarSesion(){
-    localStorage.removeItem("usuarioActivo");
-    location="login.html";
+
+    localStorage.removeItem(
+        "usuarioActivo"
+    );
+
+    location = "login.html";
 }
 
 // ==========================================
-// BIBLIOTECA DINÁMICA DESDE GOOGLE SHEETS
+// BIBLIOTECA DINÁMICA
 // ==========================================
 
 const biblioteca = {};
@@ -66,18 +100,80 @@ const biblioteca = {};
 const bibliotecaCSV =
 "https://docs.google.com/spreadsheets/d/1rTS-hBOO0EuYaERYEos1IGGesvJBjATbpo75keTBHZ0/export?format=csv";
 
+// MÁXIMO LIBROS VISIBLES
+const LIMITE_LIBROS = 8;
+
+// ==========================================
+// PORTADA BIBLIOLUX SVG
+// ==========================================
+
+const PORTADA_LIBRO = `data:image/svg+xml;utf8,
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='600'>
+
+<rect width='100%' height='100%' fill='%23111111'/>
+
+<rect x='20' y='20'
+width='360'
+height='560'
+rx='20'
+fill='%23181818'
+stroke='%23333333'
+stroke-width='2'/>
+
+<text x='50%'
+y='42%'
+dominant-baseline='middle'
+text-anchor='middle'
+fill='white'
+font-size='42'
+font-family='Arial'
+font-weight='bold'>
+
+BiblioLux
+
+</text>
+
+<line x1='90'
+y1='320'
+x2='310'
+y2='320'
+stroke='%23666666'
+stroke-width='2'/>
+
+<text x='50%'
+y='58%'
+dominant-baseline='middle'
+text-anchor='middle'
+fill='%23bbbbbb'
+font-size='22'
+font-family='Arial'>
+
+Conocimiento sin límites
+
+</text>
+
+</svg>`;
+
+// ==========================================
+// CARGAR GOOGLE SHEETS
+// ==========================================
+
 async function cargarBibliotecaRemota(){
 
     try{
 
         const respuesta =
-            await fetch(bibliotecaCSV);
+            await fetch(
+                bibliotecaCSV
+            );
 
         const texto =
             await respuesta.text();
 
         const filas =
-            texto.split("\n").slice(1);
+            texto
+            .split("\n")
+            .slice(1);
 
         filas.forEach(fila=>{
 
@@ -85,31 +181,58 @@ async function cargarBibliotecaRemota(){
                 fila.split(",");
 
             const nombre =
-                columnas[0]?.replace(/"/g,"").trim();
+                columnas[0]
+                ?.replace(/"/g,"")
+                .trim();
 
-            const categoria =
-                columnas[1]?.replace(/"/g,"").trim();
+            let categoria =
+                columnas[1]
+                ?.replace(/"/g,"")
+                .trim();
 
             const archivo =
-                columnas[2]?.replace(/"/g,"").trim();
+                columnas[2]
+                ?.replace(/"/g,"")
+                .trim();
 
             const tipo =
-                columnas[3]?.replace(/"/g,"").trim();
+                columnas[3]
+                ?.replace(/"/g,"")
+                .trim();
 
-            if(!nombre || !archivo) return;
+            if(
+                !nombre ||
+                !archivo
+            ) return;
 
-            // Portada automática temporal
-            const imagen =
-                "https://covers.openlibrary.org/b/id/8235080-L.jpg";
+            // LIMPIAR CATEGORÍAS
+            if(
+                !categoria ||
+                categoria.includes("http") ||
+                categoria.length > 40
+            ){
 
-            if(!biblioteca[categoria]){
+                categoria = "General";
+            }
+
+            // CREAR CATEGORÍA
+            if(
+                !biblioteca[categoria]
+            ){
+
                 biblioteca[categoria] = [];
             }
 
-            biblioteca[categoria].push({
+            // AGREGAR LIBRO
+            biblioteca[categoria]
+            .push({
+
                 nombre,
                 archivo,
-                imagen,
+
+                imagen:
+                    PORTADA_LIBRO,
+
                 tipo
             });
 
@@ -124,48 +247,63 @@ async function cargarBibliotecaRemota(){
     }
 }
 
-function agregarLibro(categoria, nombre, archivo, imagen){
-    if(!biblioteca[categoria]){
-        biblioteca[categoria] = [];
-    }
-
-    biblioteca[categoria].push({
-        nombre,
-        archivo,
-        imagen
-    });
-}
+// ==========================================
+// CONVERTIR LINK DRIVE
+// ==========================================
 
 function obtenerUrlDriveDirecta(url){
 
     if(!url) return url;
 
-    if(!url.includes('drive.google.com')){
+    if(
+        !url.includes(
+            'drive.google.com'
+        )
+    ){
+
         return url;
     }
 
-    if(url.includes('/uc?') || url.includes('export=download')){
+    if(
+        url.includes('/uc?') ||
+        url.includes(
+            'export=download'
+        )
+    ){
+
         return url;
     }
 
     const driveIdPatterns = [
+
         /\/file\/d\/([a-zA-Z0-9_-]{20,})/,
+
         /[?&]id=([a-zA-Z0-9_-]{20,})/,
+
         /\/open\?id=([a-zA-Z0-9_-]{20,})/
     ];
 
-    for(const pattern of driveIdPatterns){
+    for(
+        const pattern
+        of driveIdPatterns
+    ){
 
-        const match = url.match(pattern);
+        const match =
+            url.match(pattern);
 
         if(match){
 
-            return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+            return
+`https://drive.google.com/uc?export=download&id=${match[1]}`;
         }
     }
 
     return url;
 }
+
+// ==========================================
+// CARGAR LIBROS
+// ==========================================
 
 function cargarLibros(){
 
@@ -183,69 +321,174 @@ function cargarLibros(){
         let libros =
             biblioteca[cat];
 
-        if(!libros || libros.length === 0)
-            continue;
+        if(
+            !libros ||
+            libros.length === 0
+        ) continue;
 
         let fila =
-            `<h2>${cat}</h2><div class="fila">`;
+`
+<h2>${cat}</h2>
+<div class="fila">
+`;
 
-        libros.forEach(libro=>{
+        // SOLO 8 LIBROS
+        libros
+        .slice(0, LIMITE_LIBROS)
+        .forEach(libro=>{
 
             const enlace =
-                libro.archivo
-                    ? obtenerUrlDriveDirecta(
-                        libro.archivo
-                    )
-                    : '#';
+                obtenerUrlDriveDirecta(
+                    libro.archivo
+                );
 
-            const esLocal =
-                enlace &&
-                !/^https?:\/\//.test(enlace);
+            fila +=
+`
+<div class="libro">
 
-            const downloadAttr =
-                esLocal ? 'download' : '';
+    <img
+        loading="lazy"
+        src="${libro.imagen}"
+        alt="${libro.nombre}"
+    >
 
-            const targetAttr =
-                esLocal ? '_self' : '_blank';
+    <div class="info-libro">
 
-            fila += `
-            <div class="libro">
-                <img src="${libro.imagen}" alt="Portada ${libro.nombre}">
+        <p>${libro.nombre}</p>
 
-                <div class="info-libro">
+        <a href="${enlace}"
+           target="_blank"
+           rel="noreferrer noopener">
 
-                    <p>${libro.nombre}</p>
+           Descargar
 
-                    <a href="${enlace}"
-                       ${downloadAttr}
-                       target="${targetAttr}"
-                       rel="noreferrer noopener">
+        </a>
 
-                       Descargar
+    </div>
 
-                    </a>
-
-                </div>
-            </div>`;
+</div>
+`;
         });
 
         fila += `</div>`;
+
+        // BOTÓN VER MÁS
+        if(
+            libros.length >
+            LIMITE_LIBROS
+        ){
+
+            fila +=
+`
+<div class="ver-mas-container">
+
+<button
+class="ver-mas-btn"
+onclick="mostrarMasLibros('${cat}')">
+
+Ver más libros
+
+</button>
+
+</div>
+`;
+        }
 
         c.innerHTML += fila;
     }
 
     if(c.innerHTML.trim() === ""){
 
-        c.innerHTML = `
-        <div class="empty-state">
+        c.innerHTML =
+`
+<div class="empty-state">
 
-            <p>
-                No hay libros disponibles aún.
-            </p>
+<p>
+No hay libros disponibles.
+</p>
 
-        </div>`;
+</div>
+`;
     }
 }
+
+// ==========================================
+// MOSTRAR MÁS LIBROS
+// ==========================================
+
+function mostrarMasLibros(categoria){
+
+    const contenedor =
+        document.getElementById(
+            "contenedorCategorias"
+        );
+
+    contenedor.innerHTML = "";
+
+    for(let cat in biblioteca){
+
+        let libros =
+            biblioteca[cat];
+
+        let fila =
+`
+<h2>${cat}</h2>
+<div class="fila">
+`;
+
+        // MOSTRAR TODOS
+        let librosMostrar =
+            cat === categoria
+            ? libros
+            : libros.slice(
+                0,
+                LIMITE_LIBROS
+            );
+
+        librosMostrar
+        .forEach(libro=>{
+
+            const enlace =
+                obtenerUrlDriveDirecta(
+                    libro.archivo
+                );
+
+            fila +=
+`
+<div class="libro">
+
+<img
+loading="lazy"
+src="${libro.imagen}"
+alt="${libro.nombre}"
+>
+
+<div class="info-libro">
+
+<p>${libro.nombre}</p>
+
+<a href="${enlace}"
+target="_blank">
+
+Descargar
+
+</a>
+
+</div>
+
+</div>
+`;
+        });
+
+        fila += `</div>`;
+
+        contenedor.innerHTML += fila;
+    }
+}
+
+// ==========================================
+// INICIAR
+// ==========================================
 
 async function initBiblioteca(){
 
@@ -256,160 +499,52 @@ async function initBiblioteca(){
 
 window.onload = initBiblioteca;
 
-// BUSCAR
+// ==========================================
+// BUSCADOR
+// ==========================================
+
 function buscarLibro(){
 
     let t =
-        buscador.value.toLowerCase();
+        buscador.value
+        .toLowerCase();
 
     document
-        .querySelectorAll(".libro")
-        .forEach(l=>{
+    .querySelectorAll(".libro")
+    .forEach(l=>{
 
         l.style.display =
             l.innerText
-                .toLowerCase()
-                .includes(t)
-                    ? "block"
-                    : "none";
+            .toLowerCase()
+            .includes(t)
+
+            ? "block"
+            : "none";
     });
 }
 
-window.addEventListener("scroll",()=>{
+// ==========================================
+// REVEAL SCROLL
+// ==========================================
+
+window.addEventListener(
+    "scroll",
+    ()=>{
 
     document
-        .querySelectorAll(".reveal")
-        .forEach(el=>{
+    .querySelectorAll(".reveal")
+    .forEach(el=>{
 
         if(
-            el.getBoundingClientRect().top
+            el.getBoundingClientRect()
+            .top
             <
-            window.innerHeight-50
+            window.innerHeight - 50
         ){
-            el.classList.add("active");
+
+            el.classList.add(
+                "active"
+            );
         }
     });
 });
-
-const canvas =
-    document.getElementById("particles");
-
-if(canvas){
-
-    const ctx =
-        canvas.getContext("2d");
-
-    canvas.width =
-        window.innerWidth;
-
-    canvas.height =
-        window.innerHeight;
-
-    let particles = [];
-
-    for(let i=0;i<60;i++){
-
-        particles.push({
-
-            x:
-                Math.random()*canvas.width,
-
-            y:
-                Math.random()*canvas.height,
-
-            size:
-                Math.random()*1.5,
-
-            speedX:
-                (Math.random()-0.5)*0.2,
-
-            speedY:
-                (Math.random()-0.5)*0.2
-        });
-    }
-
-    function animar(){
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        particles.forEach(p=>{
-
-            p.x += p.speedX;
-
-            p.y += p.speedY;
-
-            ctx.beginPath();
-
-            ctx.arc(
-                p.x,
-                p.y,
-                p.size,
-                0,
-                Math.PI*2
-            );
-
-            ctx.fillStyle =
-                "rgba(200,200,200,0.15)";
-
-            ctx.fill();
-        });
-
-        requestAnimationFrame(animar);
-    }
-
-    animar();
-}
-
-// GLOW SUAVE
-let mouseX = 0,
-    mouseY = 0;
-
-let glowX = 0,
-    glowY = 0;
-
-const glowSmoothing = 0.15;
-
-document.addEventListener(
-    "mousemove",
-    e => {
-
-    mouseX = e.clientX;
-
-    mouseY = e.clientY;
-});
-
-function animateGlow(){
-
-    let glow =
-        document.getElementById("glow");
-
-    if(glow){
-
-        glowX +=
-            (mouseX - glowX)
-            *
-            glowSmoothing;
-
-        glowY +=
-            (mouseY - glowY)
-            *
-            glowSmoothing;
-
-        glow.style.left =
-            glowX + "px";
-
-        glow.style.top =
-            glowY + "px";
-    }
-
-    requestAnimationFrame(
-        animateGlow
-    );
-}
-
-animateGlow();
